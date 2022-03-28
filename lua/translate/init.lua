@@ -75,10 +75,10 @@ vim.schedule_wrap( function() stdout:read_stop() stdout:close() handle:close() e
 )
 vim.loop.read_start(stdout, onread)
 end
-function M.translateN(content)
+function M.translateN()
     M.translate(vim.call('expand','<cword>'))
 end
-function M.translateV(content)
+function M.translateV()
     M.translate(getVisualSelection())
 end
 
