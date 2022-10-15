@@ -76,10 +76,10 @@ function M.translate(content)
 
 end
 function M.translateN()
-    translate(vim.call('expand','<cword>'))
+    M.translate(vim.call('expand','<cword>'))
 end
 function M.translateV()
-    translate(getVisualSelection())
+    M.translate(getVisualSelection())
 end
 
 return M
