@@ -1,14 +1,8 @@
 local M = {}
 local title = "translate"
 local notify = require("notify")
-local function onread(err, data)
-    if err then
-        return
-    end
-    if data then
-        notify(data,"info",{title = title, render = "minimal", stages = "fade"})
-    end
-end
+local job = require('plenary.job')
+
 local function getVisualSelection()
     local cursor = vim.api.nvim_win_get_cursor(0)
     local cline, ccol = cursor[1], cursor[2]
@@ -62,24 +56,30 @@ local function getVisualSelection()
     return  table.concat(selection, "\n")
 end
 
-
 function M.translate(content)
-    local stdout = vim.loop.new_pipe(false)
-    handle = vim.loop.spawn('trans', {
-        args = { content, "-no-ansi", "-show-prompt-message=N", "-show-languages=N",
-        "-show-translation-phonetics=N", "-show-alternatives=N", ":zh"
-    },
-    stdio = {nil,stdout,stderr}
-},
-vim.schedule_wrap( function() stdout:read_stop() stdout:close() handle:close() end)
-)
-vim.loop.read_start(stdout, onread)
+    local args = ' -X socks5://127.0.0.1:1080 https://google.com'
+    local title = "translate"
+
+    job:new({
+        command = "trans",
+        args = {content, '-x',"127.0.0.1:8889", "-show-prompt-message=N","-no-ansi","-show-languages=N", "-show-translation-phonetics=N","-show-alternatives=N",":zh" },
+        on_exit = function(j, exit_code)
+            local res = table.concat(j:result(), "\n")
+            local notify_type = "info"
+
+            if exit_code ~=0 then
+                notify_type = "error"
+            end
+            notify(res, notify_type,{title = title, render = "minimal", stages = "fade"})
+        end,
+    }):start()
+
 end
 function M.translateN()
-    M.translate(vim.call('expand','<cword>'))
+    translate(vim.call('expand','<cword>'))
 end
 function M.translateV()
-    M.translate(getVisualSelection())
+    translate(getVisualSelection())
 end
 
 return M
