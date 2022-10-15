@@ -64,13 +64,12 @@ function M.translate(content)
         command = "trans",
         args = {content, '-x',"127.0.0.1:8889", "-show-prompt-message=N","-no-ansi","-show-languages=N", "-show-translation-phonetics=N","-show-alternatives=N",":zh" },
         on_exit = function(j, exit_code)
-            local res = table.concat(j:result(), "\n")
-            local notify_type = "info"
 
             if exit_code ~=0 then
-                notify_type = "error"
+                return
             end
-            notify(res, notify_type,{title = title, render = "minimal", stages = "fade"})
+            local res = table.concat(j:result(), "\n")
+            notify(res, "info",{title = title, render = "minimal", stages = "fade"})
         end,
     }):start()
 
