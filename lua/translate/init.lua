@@ -57,12 +57,10 @@ local function getVisualSelection()
 end
 
 function M.translate(content)
-    local args = ' -X socks5://127.0.0.1:1080 https://google.com'
     local title = "translate"
-
     job:new({
-        command = "trans",
-        args = {content, '-x',"127.0.0.1:8889", "-show-prompt-message=N","-no-ansi","-show-languages=N", "-show-translation-phonetics=N","-show-alternatives=N",":zh" },
+        command = "tsocks",
+        args = { "trans", content, "-show-prompt-message=N","-no-ansi","-show-languages=N", "-show-translation-phonetics=N","-show-alternatives=N",":zh" },
         on_exit = function(j, exit_code)
 
             if exit_code ~=0 then
